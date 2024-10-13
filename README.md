@@ -6,6 +6,7 @@
 
 ## Features
 
+- Works with the Discord Latest API Version
 - Simple and intuitive API
 - Automatic data persistence
 - Timestamp tracking for each entry
@@ -16,34 +17,45 @@
 
 `npm install @mattythedev01/easydatadb`
 
-## Example bot code
+## Example Usage
 
 ```js
-const { Client, Intents } = require("discord.js");
-const easydatadb = require("@mattythedev01/easydatadb"); // Adjust the path as necessary
+// Example usage of easydatadb
 
-const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
-});
-const db = new easydatadb();
+const EasyDataDB = require("@mattythedev01/easydatadb"); // Adjust the path as necessary
 
-client.once("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
-});
+// Create an instance of the database
+const db = new EasyDataDB();
 
-client.on("messageCreate", (message) => {
-  if (message.content.startsWith("!set")) {
-    const [command, key, value] = message.content.split(" ");
-    db.set(key, value);
-    message.reply(`Set ${key} to ${value}`);
-  }
+// Set user data
+db.setUserData("user123", "name", "John Doe");
+db.setUserData("user123", "age", 30);
+db.setUserData("user123", "hobbies", ["reading", "gaming"]);
 
-  if (message.content.startsWith("!get")) {
-    const [command, key] = message.content.split(" ");
-    const value = db.get(key);
-    message.reply(`Value of ${key} is ${value}`);
-  }
-});
+// Retrieve and log user data
+const userName = db.getUserData("user123", "name");
+const userAge = db.getUserData("user123", "age");
+const userHobbies = db.getUserData("user123", "hobbies");
 
-client.login("YOUR_DISCORD_BOT_TOKEN");
+console.log(`User Name: ${userName}`); // Output: User Name: John Doe
+console.log(`User Age: ${userAge}`); // Output: User Age: 30
+console.log(`User Hobbies: ${userHobbies.join(", ")}`); // Output: User Hobbies: reading, gaming
+
+// Add a hobby to the user's hobbies array
+db.addToArray("users", "user123", "hobbies", "coding");
+
+// Retrieve and log updated hobbies
+const updatedHobbies = db.getUserData("user123", "hobbies");
+console.log(`Updated Hobbies: ${updatedHobbies.join(", ")}`); // Output: Updated Hobbies: reading, gaming, coding
+
+// Increment a value (e.g., user score)
+db.incrementValue("users", "user123", "score");
+
+// Retrieve and log the updated score
+const userScore = db.getData("users", "user123", "score");
+console.log(`User Score: ${userScore}`); // Output: User Score: 1
+
+// Clear all data
+db.clear();
+console.log("All data cleared.");
 ```
