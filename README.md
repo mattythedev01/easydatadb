@@ -1,8 +1,8 @@
-# DataDB Documentation
+# @mattythedev01/easydatadb Documentation
 
 ## Overview
 
-"datadb", is a easy way to store data for your discord bot or any other projects outside of discord. It'll make a json folder & file in your current directory, and those files will store the data you input (Mainly used for discord bots).
+"@mattythedev01/easydatadb", is a easy way to store data for your discord bot or any other projects outside of discord. It'll make a json folder & file in your current directory, and those files will store the data you input (Mainly used for discord bots).
 
 ## Features
 
@@ -14,20 +14,36 @@
 
 ## Installation
 
-`npm install datadb`
+`npm install @mattythedev01/easydatadb`
 
-## Example Code
+## Example bot code
 
 ```js
-const DataDB = require("datadb"); // Adjust the path
-const datadb = new DataDB();
+const { Client, Intents } = require("discord.js");
+const easydatadb = require("@mattythedev01/easydatadb"); // Adjust the path as necessary
 
-// Log a simple string
-datadb.storedata("Bot status", "Running");
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+});
+const db = new easydatadb();
 
-// Log a number
-datadb.storedata("Total users", 1500);
+client.once("ready", () => {
+  console.log(`Logged in as ${client.user.tag}`);
+});
 
-// Log an array
-datadb.storedata("Active channels", ["general", "support", "gaming"]);
+client.on("messageCreate", (message) => {
+  if (message.content.startsWith("!set")) {
+    const [command, key, value] = message.content.split(" ");
+    db.set(key, value);
+    message.reply(`Set ${key} to ${value}`);
+  }
+
+  if (message.content.startsWith("!get")) {
+    const [command, key] = message.content.split(" ");
+    const value = db.get(key);
+    message.reply(`Value of ${key} is ${value}`);
+  }
+});
+
+client.login("YOUR_DISCORD_BOT_TOKEN");
 ```

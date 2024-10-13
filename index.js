@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-class datadb {
+class easydatadb {
   constructor(filePath = "json/datadb.json") {
     this.filePath = filePath;
     this.data = {};
@@ -56,11 +56,110 @@ class datadb {
     return Object.entries(this.data);
   }
 
-  // method to store data with a timestamp
-  storedata(key, value) {
+  // Discord-specific methods
+
+  setData(type, id, key, value) {
+    if (!this.data[type]) {
+      this.data[type] = {};
+    }
+    if (!this.data[type][id]) {
+      this.data[type][id] = {};
+    }
+    this.data[type][id][key] = value;
+    this.save();
+  }
+
+  getData(type, id, key) {
+    return this.data[type] && this.data[type][id]
+      ? this.data[type][id][key]
+      : undefined;
+  }
+
+  setUserData(userId, key, value) {
+    this.setData("users", userId, key, value);
+  }
+
+  getUserData(userId, key) {
+    return this.getData("users", userId, key);
+  }
+
+  setGuildData(guildId, key, value) {
+    this.setData("guilds", guildId, key, value);
+  }
+
+  getGuildData(guildId, key) {
+    return this.getData("guilds", guildId, key);
+  }
+
+  setChannelData(channelId, key, value) {
+    this.setData("channels", channelId, key, value);
+  }
+
+  getChannelData(channelId, key) {
+    return this.getData("channels", channelId, key);
+  }
+
+  addToArray(type, id, key, value) {
+    if (!this.data[type]) {
+      this.data[type] = {};
+    }
+    if (!this.data[type][id]) {
+      this.data[type][id] = {};
+    }
+    if (!Array.isArray(this.data[type][id][key])) {
+      this.data[type][id][key] = [];
+    }
+    this.data[type][id][key].push(value);
+    this.save();
+  }
+
+  removeFromArray(type, id, key, value) {
+    if (
+      this.data[type] &&
+      this.data[type][id] &&
+      Array.isArray(this.data[type][id][key])
+    ) {
+      this.data[type][id][key] = this.data[type][id][key].filter(
+        (item) => item !== value
+      );
+      this.save();
+    }
+  }
+
+  incrementValue(type, id, key) {
+    if (!this.data[type]) {
+      this.data[type] = {};
+    }
+    if (!this.data[type][id]) {
+      this.data[type][id] = {};
+    }
+    if (typeof this.data[type][id][key] !== "number") {
+      this.data[type][id][key] = 0;
+    }
+    this.data[type][id][key]++;
+    this.save();
+    return this.data[type][id][key];
+  }
+
+  decrementValue(type, id, key) {
+    if (!this.data[type]) {
+      this.data[type] = {};
+    }
+    if (!this.data[type][id]) {
+      this.data[type][id] = {};
+    }
+    if (typeof this.data[type][id][key] !== "number") {
+      this.data[type][id][key] = 0;
+    }
+    this.data[type][id][key]--;
+    this.save();
+    return this.data[type][id][key];
+  }
+
+  storeData(type, id, key, value) {
     const timestamp = Date.now();
-    this.set(key, { value, timestamp });
+    this.setData(type, id, key, { value, timestamp });
   }
 }
 
-module.exports = datadb;
+module.exports = easydatadb;

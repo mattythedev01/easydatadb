@@ -1,6 +1,6 @@
 {
-  "name": "datadb",
-  "version": "1.0.5",
+  "name": "@mattythedev01/easydatadb",
+  "version": "1.0.1",
   "description": "Makes you a bot",
   "main": "./index.js",
   "scripts": {
