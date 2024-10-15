@@ -1,6 +1,6 @@
 {
   "name": "@mattythedev01/easydatadb",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Makes you a bot",
   "main": "./index.js",
   "scripts": {
