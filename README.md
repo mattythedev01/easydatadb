@@ -22,40 +22,32 @@
 ```js
 // Example usage of easydatadb
 
-const EasyDataDB = require("@mattythedev01/easydatadb"); // Adjust the path as necessary
+// Import the EasyDataDB package
+const EasyDataDB = require("@mattythedev01/easydatadb");
 
-// Create an instance of the database
-const db = new EasyDataDB();
+// Create an instance of EasyDataDB
+const db = new EasyDataDB("json/mydatabase.json");
 
-// Set user data
-db.setUserData("user123", "name", "John Doe");
+// Set some data
+db.set("username", "mattythedev01");
 db.setUserData("user123", "age", 30);
-db.setUserData("user123", "hobbies", ["reading", "gaming"]);
+db.setGuildData("guild456", "name", "My Guild");
 
-// Retrieve and log user data
-const userName = db.getUserData("user123", "name");
+// Get data
+const username = db.get("username");
 const userAge = db.getUserData("user123", "age");
-const userHobbies = db.getUserData("user123", "hobbies");
+const guildName = db.getGuildData("guild456", "name");
 
-console.log(`User Name: ${userName}`); // Output: User Name: John Doe
+console.log(`Username: ${username}`); // Output: Username: mattythedev01
 console.log(`User Age: ${userAge}`); // Output: User Age: 30
-console.log(`User Hobbies: ${userHobbies.join(", ")}`); // Output: User Hobbies: reading, gaming
+console.log(`Guild Name: ${guildName}`); // Output: Guild Name: My Guild
 
-// Add a hobby to the user's hobbies array
-db.addToArray("users", "user123", "hobbies", "coding");
+// Check if a key exists
+const hasUser = db.has("username"); // true
 
-// Retrieve and log updated hobbies
-const updatedHobbies = db.getUserData("user123", "hobbies");
-console.log(`Updated Hobbies: ${updatedHobbies.join(", ")}`); // Output: Updated Hobbies: reading, gaming, coding
-
-// Increment a value (e.g., user score)
-db.incrementValue("users", "user123", "score");
-
-// Retrieve and log the updated score
-const userScore = db.getData("users", "user123", "score");
-console.log(`User Score: ${userScore}`); // Output: User Score: 1
+// Delete a key
+db.delete("username");
 
 // Clear all data
 db.clear();
-console.log("All data cleared.");
 ```
