@@ -1,3 +1,8 @@
+/**
+ * @author: mattythedev01
+ * @description: A Just a simple package for storing data in a JSON file.
+ */
+
 const fs = require("fs");
 const path = require("path");
 
@@ -16,149 +21,250 @@ class easydatadb {
       if (error.code === "ENOENT") {
         this.save();
       } else {
+        console.error("Error loading data:", error);
         throw error;
       }
     }
   }
 
   save() {
-    const dirPath = path.dirname(this.filePath);
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
+    try {
+      const dirPath = path.dirname(this.filePath);
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+      fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
+    } catch (error) {
+      console.error("Error saving data:", error);
+      throw error;
     }
-    fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
   }
 
   set(key, value) {
-    this.data[key] = value;
-    this.save();
+    try {
+      this.data[key] = value;
+      this.save();
+    } catch (error) {
+      console.error("Error setting data:", error);
+      throw error;
+    }
   }
 
   get(key) {
-    return this.data[key];
+    try {
+      return this.data[key];
+    } catch (error) {
+      console.error("Error getting data:", error);
+      throw error;
+    }
   }
 
   has(key) {
-    return key in this.data;
+    try {
+      return key in this.data;
+    } catch (error) {
+      console.error("Error checking data:", error);
+      throw error;
+    }
   }
 
   delete(key) {
-    delete this.data[key];
-    this.save();
+    try {
+      delete this.data[key];
+      this.save();
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      throw error;
+    }
   }
 
   clear() {
-    this.data = {};
-    this.save();
+    try {
+      this.data = {};
+      this.save();
+    } catch (error) {
+      console.error("Error clearing data:", error);
+      throw error;
+    }
   }
 
   all() {
-    return Object.entries(this.data);
+    try {
+      return Object.entries(this.data);
+    } catch (error) {
+      console.error("Error retrieving all data:", error);
+      throw error;
+    }
   }
 
   // Discord-specific methods
 
   setData(type, id, key, value) {
-    if (!this.data[type]) {
-      this.data[type] = {};
+    try {
+      if (!this.data[type]) {
+        this.data[type] = {};
+      }
+      if (!this.data[type][id]) {
+        this.data[type][id] = {};
+      }
+      this.data[type][id][key] = value;
+      this.save();
+    } catch (error) {
+      console.error("Error setting data:", error);
+      throw error;
     }
-    if (!this.data[type][id]) {
-      this.data[type][id] = {};
-    }
-    this.data[type][id][key] = value;
-    this.save();
   }
 
   getData(type, id, key) {
-    return this.data[type] && this.data[type][id]
-      ? this.data[type][id][key]
-      : undefined;
+    try {
+      return this.data[type] && this.data[type][id]
+        ? this.data[type][id][key]
+        : undefined;
+    } catch (error) {
+      console.error("Error getting data:", error);
+      throw error;
+    }
   }
 
   setUserData(userId, key, value) {
-    this.setData("users", userId, key, value);
+    try {
+      this.setData("users", userId, key, value);
+    } catch (error) {
+      console.error("Error setting user data:", error);
+      throw error;
+    }
   }
 
   getUserData(userId, key) {
-    return this.getData("users", userId, key);
+    try {
+      return this.getData("users", userId, key);
+    } catch (error) {
+      console.error("Error getting user data:", error);
+      throw error;
+    }
   }
 
   setGuildData(guildId, key, value) {
-    this.setData("guilds", guildId, key, value);
+    try {
+      this.setData("guilds", guildId, key, value);
+    } catch (error) {
+      console.error("Error setting guild data:", error);
+      throw error;
+    }
   }
 
   getGuildData(guildId, key) {
-    return this.getData("guilds", guildId, key);
+    try {
+      return this.getData("guilds", guildId, key);
+    } catch (error) {
+      console.error("Error getting guild data:", error);
+      throw error;
+    }
   }
 
   setChannelData(channelId, key, value) {
-    this.setData("channels", channelId, key, value);
+    try {
+      this.setData("channels", channelId, key, value);
+    } catch (error) {
+      console.error("Error setting channel data:", error);
+      throw error;
+    }
   }
 
   getChannelData(channelId, key) {
-    return this.getData("channels", channelId, key);
+    try {
+      return this.getData("channels", channelId, key);
+    } catch (error) {
+      console.error("Error getting channel data:", error);
+      throw error;
+    }
   }
 
   addToArray(type, id, key, value) {
-    if (!this.data[type]) {
-      this.data[type] = {};
+    try {
+      if (!this.data[type]) {
+        this.data[type] = {};
+      }
+      if (!this.data[type][id]) {
+        this.data[type][id] = {};
+      }
+      if (!Array.isArray(this.data[type][id][key])) {
+        this.data[type][id][key] = [];
+      }
+      this.data[type][id][key].push(value);
+      this.save();
+    } catch (error) {
+      console.error("Error adding to array:", error);
+      throw error;
     }
-    if (!this.data[type][id]) {
-      this.data[type][id] = {};
-    }
-    if (!Array.isArray(this.data[type][id][key])) {
-      this.data[type][id][key] = [];
-    }
-    this.data[type][id][key].push(value);
-    this.save();
   }
 
   removeFromArray(type, id, key, value) {
-    if (
-      this.data[type] &&
-      this.data[type][id] &&
-      Array.isArray(this.data[type][id][key])
-    ) {
-      this.data[type][id][key] = this.data[type][id][key].filter(
-        (item) => item !== value
-      );
-      this.save();
+    try {
+      if (
+        this.data[type] &&
+        this.data[type][id] &&
+        Array.isArray(this.data[type][id][key])
+      ) {
+        this.data[type][id][key] = this.data[type][id][key].filter(
+          (item) => item !== value
+        );
+        this.save();
+      }
+    } catch (error) {
+      console.error("Error removing from array:", error);
+      throw error;
     }
   }
 
   incrementValue(type, id, key) {
-    if (!this.data[type]) {
-      this.data[type] = {};
+    try {
+      if (!this.data[type]) {
+        this.data[type] = {};
+      }
+      if (!this.data[type][id]) {
+        this.data[type][id] = {};
+      }
+      if (typeof this.data[type][id][key] !== "number") {
+        this.data[type][id][key] = 0;
+      }
+      this.data[type][id][key]++;
+      this.save();
+      return this.data[type][id][key];
+    } catch (error) {
+      console.error("Error incrementing value:", error);
+      throw error;
     }
-    if (!this.data[type][id]) {
-      this.data[type][id] = {};
-    }
-    if (typeof this.data[type][id][key] !== "number") {
-      this.data[type][id][key] = 0;
-    }
-    this.data[type][id][key]++;
-    this.save();
-    return this.data[type][id][key];
   }
 
   decrementValue(type, id, key) {
-    if (!this.data[type]) {
-      this.data[type] = {};
+    try {
+      if (!this.data[type]) {
+        this.data[type] = {};
+      }
+      if (!this.data[type][id]) {
+        this.data[type][id] = {};
+      }
+      if (typeof this.data[type][id][key] !== "number") {
+        this.data[type][id][key] = 0;
+      }
+      this.data[type][id][key]--;
+      this.save();
+      return this.data[type][id][key];
+    } catch (error) {
+      console.error("Error decrementing value:", error);
+      throw error;
     }
-    if (!this.data[type][id]) {
-      this.data[type][id] = {};
-    }
-    if (typeof this.data[type][id][key] !== "number") {
-      this.data[type][id][key] = 0;
-    }
-    this.data[type][id][key]--;
-    this.save();
-    return this.data[type][id][key];
   }
 
   storeData(type, id, key, value) {
-    const timestamp = Date.now();
-    this.setData(type, id, key, { value, timestamp });
+    try {
+      const timestamp = Date.now();
+      this.setData(type, id, key, { value, timestamp });
+    } catch (error) {
+      console.error("Error storing data:", error);
+      throw error;
+    }
   }
 }
 
